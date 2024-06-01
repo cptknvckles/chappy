@@ -1,8 +1,9 @@
 import socket
 import threading
 #server setup
-host = 'localhost' #localhost
+host = 'localhost' 
 port = 55556
+password = 'leon420'
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a new socket using IPv4(AF_INET) and TCP(SOCK_STREAM)
 server.bind((host, port)) #binds the socket to the specified host and port
@@ -43,8 +44,17 @@ def handle_client(client):
 #define a function that will accept new clients and start a new thread for each client to handle comms
 def receive():
     while True:
+
             client, address = server.accept() #accepts a new connection and returns the client socket and address
             print(f"Connected with {str(address)}")
+
+            client.send('PASS'.encode('utf-8'))
+            client_pass = client.recv(1024).decode('utf-8')
+            
+            if client_pass != password:
+                client.send('wrong password'.encode('utf-8'))
+                client.close()
+                continue
 
             client.send('NICK'.encode('utf-8'))#asks the client for their username(nickname)
             nickname = client.recv(1024).decode('utf-8')#receives the nicname from client

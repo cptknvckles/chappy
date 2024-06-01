@@ -1,8 +1,11 @@
 import socket
 import threading
 
+
 #client setup
+password = input('enter sever password: ')
 nickname = input('Choose your username: ')
+
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 client.connect(('localhost', 55556)) #ensure this matches the server host and port on backend
 #define the receive function
@@ -11,8 +14,16 @@ def receive():
         try:
             #receive messages from the server
             message = client.recv(1024).decode('utf-8')
-            if message == 'NICK':
+            if message == "NICK":
                 client.send(nickname.encode('utf-8'))
+            elif message == 'PASS':
+                client.send(password.encode('utf-8'))
+            elif message == 'wrong password':
+                print('wrong password, connection closed')
+                client.close()
+                break
+            
+            
             else:
                 print(message)
         except:
